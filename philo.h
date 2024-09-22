@@ -32,18 +32,28 @@ typedef struct s_data
 	int				must_eat_count;
 	pthread_mutex_t	*forks;		// çatallar mutex olarak tutulacak
 	t_philo			*philos;	// filozoflar dizisi
+	long			start_time;
+	int				is_dead;	// ölüm kontrolü
+	pthread_mutex_t	death_check;	//ölüm kontrol mutexi
 } t_data;
 
 typedef struct s_philo
 {
 	int			id;
 	pthread_t	thread;
-	int			last_meal_time;
+	long		last_meal_time;
 	int			meal_count;
 	t_data		*data;		// filozofun genel verilere erişimi için
 } t_philo;
 
 //funcs		NORM KONTROLLERİNİ UNUTMA (KÜTÜPHANE STATİC VS.)
+int		check_death(t_philo *philo);
+void	sleep_and_think(t_philo *philo);
+void	eat(t_philo *philo);
+void	print_status(t_philo *philo, const char *status);
+void	put_down_forks(t_philo *philo);
+void	pick_up_forks(t_philo *philo);
+long	current_time(void);
 void	ft_free(t_data *data);
 void	*routines(void *arg);
 void	simple_exit(int code, char **av);

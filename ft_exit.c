@@ -39,6 +39,12 @@ void	simple_exit(int code, char **av)
 }
 void	ft_free(t_data *data)
 {
+	int	i;
+
+	i = -1;
+	while (++i < data->nbr_of_philos)
+		pthread_mutex_destroy(&data->forks[i]);
+	pthread_mutex_destroy(&data->death_check);
 	free(data->forks);
 	free(data->philos);
 }

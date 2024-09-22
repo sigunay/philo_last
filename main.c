@@ -47,20 +47,26 @@ static int	check_args(int ac, char **av)
 	return (0);
 }
 
-static void create_threads(t_data *data)
+static void create_threads(t_philo *p)
 {
-	int	i;
+	t_data	*data;
+	int		i;
 
+	data = p->data;
 	i = -1;
+	data->start_time = current_time();
 	while (++i < data->nbr_of_philos)	//create threads
-		pthread_create(&data->philos[i].thread, 0, &routines, &data->philos[i]);
+		{
+			data->philos[i].last_meal_time = data->start_time;
+			pthread_create(&p[i].thread, 0, &routines,&p[i]);
+		}
 	i = -1;
 	while (++i < data->nbr_of_philos)	// wait threads
-		pthread_join(data->philos[i].thread, NULL);
+		pthread_join(p[i].thread, NULL);
 	i = -1;
 	while (++i < data->nbr_of_philos)	// clean mutex
 		pthread_mutex_destroy(&data->forks[i]);
-	ft_free(data);	// free data.philos & free data.forks
+	ft_free(data);	// free data.philos and data.forks
 }
 
 static void	init_data(t_data *data, int ac, char **av)
@@ -88,7 +94,8 @@ static void	init_data(t_data *data, int ac, char **av)
 		data->philos[i].meal_count = 0;
 		data->philos[i].data = data;
 	}
-	create_threads(data);
+	data->is_dead = 0;
+	create_threads(data->philos);
 }
 // data detaylı init edildi artık rutinler yazılmalı 21.09.2024 23:09 iyi çalıştın. ertesi gün bu iş sende
 int	main(int argc, char **argv)
