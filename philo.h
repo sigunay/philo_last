@@ -62,7 +62,7 @@ int			pick_up_forks(t_philo *philo);
 long long	current_time(void);
 void		ft_free(t_data *data);
 void		*routines(void *arg);
-void		simple_exit(int code, char **av);
+void		simple_exit(int code, char **av, int flag);
 int			ft_is_num(char c);
 int			ft_atoi(const char *str);
 char		*ft_substr(const char *s, unsigned int start, size_t len);

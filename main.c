@@ -114,20 +114,23 @@ static int	init_data(t_data *data, int ac, char **av)
 int	main(int argc, char **argv)
 {
 	t_data	data;
+	int		flag;
 
+	flag = 0;
 	if ((argc != 5 && argc != 6 && argc != 2))
-			return (simple_exit(ARGERR, NULL), 1);
+			return (simple_exit(ARGERR, NULL, flag), 1);
 	if (argc == 2)
 	{
 		argv = ft_split(argv[1], ' ');
+		flag = 1;
 		if (!argv || !*argv)
-			return (simple_exit(MALLOCERR, argv), 1);
+			return (simple_exit(MALLOCERR, argv, flag), 1);
 	}
 	else
 		argv++;
 	argc = find_len(argv);
 	if (check_args(argc, argv))
-		return (simple_exit(ARGERR, argv), 1);
+		return (simple_exit(ARGERR, argv, flag), 1);
 	if (init_data(&data, argc, argv))
 		return (ft_free(&data), 1);
 	if (create_threads(data.philos))

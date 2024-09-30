@@ -34,11 +34,9 @@ int	eat(t_philo *philo)
 	data = philo->data;
 	if (pick_up_forks(philo))
 		return (1);
-	pthread_mutex_lock(&data->death_check);	// bu mutexlere ne gerek var?
 	print_status(philo, "\033[31mis eating\033[0m");
-	philo->last_meal_time = current_time();
-	pthread_mutex_unlock(&data->death_check);
 	precise_sleep(data, data->time_to_eat);
+	philo->last_meal_time = current_time();
 	philo->meal_count++;
 	put_down_forks(philo);
 	return (0);

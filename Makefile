@@ -29,5 +29,6 @@ fclean: clean
 		@echo "$(CYAN)Fclean completed successfully!$(END)"
 re: fclean all
 f: fclean
+c: clean
 
-.PHONY: all clean fclean re f
+.PHONY: all clean fclean re f c

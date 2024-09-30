@@ -15,20 +15,21 @@
 #include "philo.h"
 #include <stdio.h>
 
-void	simple_exit(int code, char **av)
+void	simple_exit(int code, char **av, int flag)
 {
 	int	i;
 
-	if (code == ARGERR)
-		write(1, "Arguments error!\n", 17);
-	if (code == MALLOCERR)
+	if (av && flag)
 	{
 		i = -1;
 		while (av && av[++i])
 			free(av[i]);
 		free(av);
-		write(1, "Malloc error!\n", 14);
+		if (code == MALLOCERR)
+			write(1, "Malloc error!\n", 14);
 	}
+	if (code == ARGERR)
+		write(1, "Arguments error!\n", 17);
 }
 void	ft_free(t_data *data)
 {
