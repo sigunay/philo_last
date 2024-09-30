@@ -15,8 +15,6 @@
 
 #include <pthread.h>
 
-// HATA KODLARINI DOĞRU YAZDIRMAK İÇİN EXİT FONKSİYONU DEFİNELARI
-//#define USAGERR = 1 muhtemelen gereksiz
 # define ARGERR 2
 # define MALLOCERR 3
 
@@ -30,36 +28,44 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				must_eat_count;
-	pthread_mutex_t	*forks;		// çatallar mutex olarak tutulacak
-	t_philo			*philos;	// filozoflar dizisi
-	long			start_time;
+	pthread_mutex_t	*forks;
+	t_philo			*philos;
+	int				all_fed;
+	long long			start_time;
 	int				is_dead;	// ölüm kontrolü
 	pthread_mutex_t	death_check;	//ölüm kontrol mutexi
+	int				is_init_dc_mutex;
+	pthread_mutex_t	print;
+	int				is_init_p_mutex;
 } t_data;
 
 typedef struct s_philo
 {
 	int			id;
+	int			left_fork;
+	int			right_fork;
 	pthread_t	thread;
-	long		last_meal_time;
+	long long		last_meal_time;
 	int			meal_count;
-	t_data		*data;		// filozofun genel verilere erişimi için
+	t_data		*data;
 } t_philo;
 
 //funcs		NORM KONTROLLERİNİ UNUTMA (KÜTÜPHANE STATİC VS.)
-int		check_death(t_philo *philo);
-void	sleep_and_think(t_philo *philo);
-void	eat(t_philo *philo);
-void	print_status(t_philo *philo, const char *status);
-void	put_down_forks(t_philo *philo);
-void	pick_up_forks(t_philo *philo);
-long	current_time(void);
-void	ft_free(t_data *data);
-void	*routines(void *arg);
-void	simple_exit(int code, char **av);
-int		ft_is_num(char c);
-int		ft_atoi(const char *str);
-char	*ft_substr(const char *s, unsigned int start, size_t len);
-char	**ft_split(const char *s, char c);
+void		ft_free(t_data *data);
+int			find_len(char **arr);
+void		check_death(t_data *data, t_philo *philo);
+void		sleep_and_think(t_philo *philo);
+int			eat(t_philo *philo);
+void		print_status(t_philo *philo, const char *status);
+void		put_down_forks(t_philo *philo);
+int			pick_up_forks(t_philo *philo);
+long long	current_time(void);
+void		ft_free(t_data *data);
+void		*routines(void *arg);
+void		simple_exit(int code, char **av);
+int			ft_is_num(char c);
+int			ft_atoi(const char *str);
+char		*ft_substr(const char *s, unsigned int start, size_t len);
+char		**ft_split(const char *s, char c);
 
 # endif

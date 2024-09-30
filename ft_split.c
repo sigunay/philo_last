@@ -79,7 +79,6 @@ static char	**free_all(char **sp)
 	free(sp);
 	return (NULL);
 }
-
 char	**ft_split(const char *s, char c)
 {
 	char	**split;
@@ -88,6 +87,8 @@ char	**ft_split(const char *s, char c)
 
 	i = -1;
 	word_count = ft_wordcount((char *)s, c);
+	if (word_count != 4 && word_count != 5)
+		return (NULL);
 	split = (char **)ft_calloc(word_count + 1, sizeof(char *));
 	if (!split)
 		return (NULL);

@@ -12,14 +12,23 @@
 
 #include <sys/time.h>
 
-long	current_time(void)
+long long	current_time(void)
 {
 	struct timeval	tv;
-	long			ms;
 	
 	gettimeofday(&tv, 0);
-	ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	return (ms);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+int	find_len(char **arr)
+{
+	int				i;
+	unsigned int	len;
+
+	len = 0;
+	i = -1;
+	while (arr[++i])
+		len++;
+	return (len);
 }
 
 int	ft_is_num(char c)

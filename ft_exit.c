@@ -19,32 +19,40 @@ void	simple_exit(int code, char **av)
 {
 	int	i;
 
-	i = -1;
 	if (code == ARGERR)
+		write(1, "Arguments error!\n", 17);
+	i = -1;
+	if (code == MALLOCERR)
 	{
 		while (av && av[++i])
 			free(av[i]);
 		free(av);
-		write(1, "Arguments error!\n", 17);
-		exit(ARGERR);
-	}
-	if (code == MALLOCERR)
-	{
-		while (av[++i])
-			free(av[i]);
-		free(av);
 		write(1, "Malloc error!\n", 14);
-		exit(MALLOCERR);
 	}
 }
 void	ft_free(t_data *data)
 {
-	int	i;
+	t_philo	*philo;
+	int		i;
 
+	philo = data->philos;
 	i = -1;
-	while (++i < data->nbr_of_philos)
-		pthread_mutex_destroy(&data->forks[i]);
-	pthread_mutex_destroy(&data->death_check);
-	free(data->forks);
-	free(data->philos);
+	if (data->forks)
+	{
+		while (++i < data->nbr_of_philos)
+			pthread_mutex_destroy(&data->forks[i]);
+		free(data->forks);
+	}
+	if (philo)
+	{
+		i = -1;
+		while (++i < data->nbr_of_philos && philo[i].thread)
+			pthread_join(philo[i].thread, NULL);
+		free(philo);
+	}
+	if (data->is_init_dc_mutex)
+		pthread_mutex_destroy(&data->death_check);
+	if (data->is_init_p_mutex)
+		pthread_mutex_destroy(&data->print);
+	i = -1;
 }

@@ -12,18 +12,37 @@
 
 #include "philo.h"
 #include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-void	eat(t_philo *philo)
+void	precise_sleep(t_data *data, long time)
+{
+	int		start_time;
+
+	start_time = current_time();
+	while (!data->is_dead)
+	{
+		if (current_time() - start_time >= time)
+			break;
+		usleep(50);
+	}
+}
+
+int	eat(t_philo *philo)
 {
 	t_data	*data;
 
 	data = philo->data;
-	pick_up_forks(philo);
+	if (pick_up_forks(philo))
+		return (1);
+	pthread_mutex_lock(&data->death_check);	// bu mutexlere ne gerek var?
 	print_status(philo, "is eating");
 	philo->last_meal_time = current_time();
-	usleep(data->time_to_eat * 1000);	// precise_sleep() hassas uyutma
+	pthread_mutex_unlock(&data->death_check);
+	precise_sleep(data, data->time_to_eat);
 	philo->meal_count++;
 	put_down_forks(philo);
+	return (0);
 }
 void	sleep_and_think(t_philo *philo)
 {
@@ -31,21 +50,34 @@ void	sleep_and_think(t_philo *philo)
 
 	data = philo->data;
 	print_status(philo, "is sleeping");
-	usleep(data->time_to_sleep * 1000);
+	precise_sleep(data, data->time_to_sleep);
 	print_status(philo, "is thinking");
 }
-int	check_death(t_philo *philo)
+#include <stdio.h>
+void	check_death(t_data *data, t_philo *philo)
 {
-	t_data	*data;
+	int	i;
 
-	data = philo->data;
-	pthread_mutex_lock(&(data->death_check));
-	if (current_time() - philo->last_meal_time > data->time_to_die)
+	while (!data->all_fed)
 	{
-		print_status(philo, "died");
-		data->is_dead = 1;
-		pthread_mutex_unlock(&(data->death_check));
-		return (1);
+		i = -1;
+		while (++i < data->nbr_of_philos && !data->is_dead)
+		{
+			pthread_mutex_lock(&data->death_check);
+			if (current_time() - philo[i].last_meal_time > data->time_to_die)
+			{
+				print_status(philo, "died");
+				data->is_dead = 1;
+			}
+			pthread_mutex_unlock(&data->death_check);
+			usleep(100);
+		}
+		if (data->is_dead)
+			break;
+		i = 0;
+		while (data->must_eat_count != -1 && i < data->nbr_of_philos && philo[i].meal_count >= data->must_eat_count)
+			i++;
+		if (i == data->nbr_of_philos)
+			data->all_fed = 1;
 	}
-	return (0);
 }

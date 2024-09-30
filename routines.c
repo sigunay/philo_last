@@ -16,21 +16,33 @@
 
 void	print_status(t_philo *philo, const char *status)
 {
-	long	timestamp;
+	t_data	*data;
 
-	timestamp = current_time();
-	printf("%ld %d %s\n", timestamp, philo->id, status);
+	data = philo->data;
+	pthread_mutex_lock(&data->print);
+	if (!data->is_dead)
+	{
+		printf("%lld ", current_time() - data->start_time);
+		printf("%d ", philo->id + 1);
+		printf("%s\n", status);
+	}
+	pthread_mutex_unlock(&data->print);
 }
 
-void	pick_up_forks(t_philo *philo)
+int	pick_up_forks(t_philo *philo)
 {
 	t_data	*data;
 	
 	data = philo->data;
-	pthread_mutex_lock(&(data->forks[philo->id]));
+	pthread_mutex_lock(&(data->forks[philo->left_fork]));
 	print_status(philo, "has taken a fork");
-	pthread_mutex_lock(&(data->forks[(philo->id + 1) % data->nbr_of_philos]));
-	print_status(philo, "has taken a fork");
+	if (philo->right_fork != philo->left_fork)
+	{
+		pthread_mutex_lock(&(data->forks[philo->right_fork]));
+		print_status(philo, "has taken a fork");
+		return (0);
+	}
+	return (1);
 }
 
 void	put_down_forks(t_philo *philo) 
@@ -39,7 +51,8 @@ void	put_down_forks(t_philo *philo)
 
 	data = philo->data;
 	pthread_mutex_unlock(&(data->forks[philo->id]));
-	pthread_mutex_unlock(&(data->forks[(philo->id + 1) % data->nbr_of_philos]));
+	if (philo->right_fork != philo->left_fork)
+		pthread_mutex_unlock(&(data->forks[(philo->id + 1) % data->nbr_of_philos]));
 }
 
 void	*routines(void *arg)
@@ -49,15 +62,13 @@ void	*routines(void *arg)
 
 	philo = (t_philo*)arg;
 	data = philo->data;
-
-	if (philo->id % 2)	// geciktirici!
+	if (philo->id % 2)
 		usleep(15000);
 	while (!data->is_dead)
 	{
-		if (check_death(philo))
-			break;
-		eat(philo);
-		if (check_death(philo))
+		if (eat(philo))
+			return (NULL);
+		if (data->all_fed)
 			break;
 		sleep_and_think(philo);
 	}
