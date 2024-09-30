@@ -68,7 +68,7 @@ static int	init_philo(t_data *data)
 		data->philos[i].left_fork = i;
 		data->philos[i].right_fork = (i + 1) % data->nbr_of_philos;
 		data->philos[i].last_meal_time = 0;
-		data->philos[i].meal_count = data->must_eat_count;
+		data->philos[i].meal_count = 0;
 		data->philos[i].data = data;
 	}
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philos);

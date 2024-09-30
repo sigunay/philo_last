@@ -50,9 +50,9 @@ void	put_down_forks(t_philo *philo)
 	t_data	*data;
 
 	data = philo->data;
-	pthread_mutex_unlock(&(data->forks[philo->id]));
+	pthread_mutex_unlock(&(data->forks[philo->left_fork]));
 	if (philo->right_fork != philo->left_fork)
-		pthread_mutex_unlock(&(data->forks[(philo->id + 1) % data->nbr_of_philos]));
+		pthread_mutex_unlock(&(data->forks[(philo->right_fork) % data->nbr_of_philos]));
 }
 
 void	*routines(void *arg)

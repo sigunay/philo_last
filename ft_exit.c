@@ -21,9 +21,9 @@ void	simple_exit(int code, char **av)
 
 	if (code == ARGERR)
 		write(1, "Arguments error!\n", 17);
-	i = -1;
 	if (code == MALLOCERR)
 	{
+		i = -1;
 		while (av && av[++i])
 			free(av[i]);
 		free(av);
@@ -54,5 +54,4 @@ void	ft_free(t_data *data)
 		pthread_mutex_destroy(&data->death_check);
 	if (data->is_init_p_mutex)
 		pthread_mutex_destroy(&data->print);
-	i = -1;
 }

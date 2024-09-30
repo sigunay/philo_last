@@ -13,11 +13,10 @@
 #include "philo.h"
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 void	precise_sleep(t_data *data, long time)
 {
-	int		start_time;
+	long long	start_time;
 
 	start_time = current_time();
 	while (!data->is_dead)
@@ -36,7 +35,7 @@ int	eat(t_philo *philo)
 	if (pick_up_forks(philo))
 		return (1);
 	pthread_mutex_lock(&data->death_check);	// bu mutexlere ne gerek var?
-	print_status(philo, "is eating");
+	print_status(philo, "\033[31mis eating\033[0m");
 	philo->last_meal_time = current_time();
 	pthread_mutex_unlock(&data->death_check);
 	precise_sleep(data, data->time_to_eat);
@@ -53,7 +52,6 @@ void	sleep_and_think(t_philo *philo)
 	precise_sleep(data, data->time_to_sleep);
 	print_status(philo, "is thinking");
 }
-#include <stdio.h>
 void	check_death(t_data *data, t_philo *philo)
 {
 	int	i;
