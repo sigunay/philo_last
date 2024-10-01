@@ -11,48 +11,33 @@
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <stdio.h>
 #include <unistd.h>
 
-void	print_status(t_philo *philo, const char *status)
+void	sleep_and_think(t_philo *philo)
 {
 	t_data	*data;
 
 	data = philo->data;
-	pthread_mutex_lock(&data->print);
-	if (!data->is_dead)
-	{
-		printf("%lld ", current_time() - data->start_time);
-		printf("%d ", philo->id + 1);
-		printf("%s\n", status);
-	}
-	pthread_mutex_unlock(&data->print);
+	if (data->is_dead == 1)
+		return ;
+	print_status(philo, "is sleeping");
+	precise_sleep(data, data->time_to_sleep);
+	print_status(philo, "is thinking");
 }
 
-int	pick_up_forks(t_philo *philo)
-{
-	t_data	*data;
-	
-	data = philo->data;
-	pthread_mutex_lock(&(data->forks[philo->left_fork]));
-	print_status(philo, "has taken a fork");
-	if (philo->right_fork != philo->left_fork)
-	{
-		pthread_mutex_lock(&(data->forks[philo->right_fork]));
-		print_status(philo, "has taken a fork");
-		return (0);
-	}
-	return (1);
-}
-
-void	put_down_forks(t_philo *philo) 
+int	eat(t_philo *philo)
 {
 	t_data	*data;
 
 	data = philo->data;
-	pthread_mutex_unlock(&(data->forks[philo->left_fork]));
-	if (philo->right_fork != philo->left_fork)
-		pthread_mutex_unlock(&(data->forks[philo->right_fork]));
+	if (pick_up_forks(philo))
+		return (1);
+	print_status(philo, "is eating");
+	precise_sleep(data, data->time_to_eat);
+	philo->last_meal_time = current_time();
+	philo->meal_count++;
+	put_down_forks(philo);
+	return (0);
 }
 
 void	*routines(void *arg)
@@ -60,7 +45,7 @@ void	*routines(void *arg)
 	t_philo	*philo;
 	t_data	*data;
 
-	philo = (t_philo*)arg;
+	philo = (t_philo *)arg;
 	data = philo->data;
 	if (philo->id % 2)
 		usleep(15000);
@@ -69,7 +54,7 @@ void	*routines(void *arg)
 		if (eat(philo))
 			return (NULL);
 		if (data->all_fed)
-			break;
+			break ;
 		sleep_and_think(philo);
 	}
 	return (NULL);

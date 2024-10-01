@@ -8,6 +8,7 @@ SRCS = main.c \
 		ft_exit.c \
 		routines.c \
 		routines1.c \
+		launcher.c \
 
 OBJS = $(SRCS:.c=.o)
 

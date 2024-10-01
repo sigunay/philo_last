@@ -10,12 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "philo.h"
 #include <stdlib.h>
 #include <unistd.h>
-#include "philo.h"
-#include <stdio.h>
 
-void	simple_exit(int code, char **av, int flag)
+void	error_handle(int code, char **av, int flag)
 {
 	int	i;
 
@@ -31,6 +30,7 @@ void	simple_exit(int code, char **av, int flag)
 	if (code == ARGERR)
 		write(1, "Arguments error!\n", 17);
 }
+
 void	ft_free(t_data *data)
 {
 	t_philo	*philo;
@@ -38,21 +38,18 @@ void	ft_free(t_data *data)
 
 	philo = data->philos;
 	i = -1;
-	if (data->forks)
-	{
-		while (++i < data->nbr_of_philos)
-			pthread_mutex_destroy(&data->forks[i]);
-		free(data->forks);
-	}
 	if (philo)
-	{
-		i = -1;
-		while (++i < data->nbr_of_philos && philo[i].thread)
-			pthread_join(philo[i].thread, NULL);
 		free(philo);
+	if (data)
+	{
+		if (data->forks)
+			while (++i < data->nbr_philo)
+				pthread_mutex_destroy(&data->forks[i]);
+		free(data->forks);
 	}
 	if (data->is_init_dc_mutex)
 		pthread_mutex_destroy(&data->death_check);
 	if (data->is_init_p_mutex)
 		pthread_mutex_destroy(&data->print);
+	i = 0;
 }

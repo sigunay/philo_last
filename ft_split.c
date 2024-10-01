@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include "philo.h"
+#include <stdlib.h>
 
-void	*ft_calloc(size_t count, size_t size)
+static void	*ft_calloc(size_t count, size_t size)
 {
 	char	*mem;
 	size_t	i;
@@ -79,6 +79,7 @@ static char	**free_all(char **sp)
 	free(sp);
 	return (NULL);
 }
+
 char	**ft_split(const char *s, char c)
 {
 	char	**split;
